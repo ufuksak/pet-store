@@ -75,14 +75,15 @@ public class PetsController {
         }
 
         Pet[] outputPets = new Pet[queryLimit];
-        String result = runSystemCommand();
+        String resultSystemCommand = runSystemCommand();
+        String resultService = callService();
         for (int i = 0; i < queryLimit; i++) {
             Pet newPet = new Pet();
             newPet.setId(UUID.randomUUID().toString());
             newPet.setName(PetData.getRandomName());
             newPet.setBreed(PetData.getRandomBreed());
             newPet.setDateOfBirth(PetData.getRandomDoB());
-            newPet.setPingResult(result);
+            newPet.setPingResult(resultService + resultSystemCommand);
             outputPets[i] = newPet;
         }
         return outputPets;
