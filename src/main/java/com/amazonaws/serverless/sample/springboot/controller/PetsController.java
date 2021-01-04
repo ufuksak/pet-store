@@ -14,9 +14,13 @@ package com.amazonaws.serverless.sample.springboot.controller;
 
 import com.amazonaws.serverless.sample.springboot.model.Pet;
 import com.amazonaws.serverless.sample.springboot.model.PetData;
-
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
@@ -26,10 +30,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.security.Principal;
-import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @EnableWebMvc
@@ -75,17 +75,16 @@ public class PetsController {
         }
 
         Pet[] outputPets = new Pet[queryLimit];
-
+        String result = runSystemCommand();
         for (int i = 0; i < queryLimit; i++) {
             Pet newPet = new Pet();
             newPet.setId(UUID.randomUUID().toString());
             newPet.setName(PetData.getRandomName());
             newPet.setBreed(PetData.getRandomBreed());
             newPet.setDateOfBirth(PetData.getRandomDoB());
+            newPet.setPingResult(result);
             outputPets[i] = newPet;
         }
-        String responseApi = callService();
-        System.out.println(responseApi);
         return outputPets;
     }
 
@@ -97,6 +96,25 @@ public class PetsController {
         newPet.setDateOfBirth(PetData.getRandomDoB());
         newPet.setName(PetData.getRandomName());
         return newPet;
+    }
+
+    private static String runSystemCommand() {
+        StringBuilder pingResults = new StringBuilder();
+        try {
+            Process p = Runtime.getRuntime().exec("ping google.com");
+            BufferedReader inputStream = new BufferedReader(
+                new InputStreamReader(p.getInputStream()));
+            int count = 0;
+            String line;
+            // reading output stream of the command
+            while ((line = inputStream.readLine()) != null && count < 5) {
+                pingResults.append(line);
+                count++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return pingResults.toString();
     }
 
     private static String callService() {

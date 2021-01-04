@@ -20,6 +20,7 @@ public class Pet {
     private String breed;
     private String name;
     private Date dateOfBirth;
+    private String pingResult;
 
     public String getId() {
         return id;
@@ -51,5 +52,13 @@ public class Pet {
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setPingResult(String pingResult) {
+        this.pingResult = pingResult;
+    }
+
+    public String getPingResult() {
+        return pingResult;
     }
 }
